@@ -1,6 +1,7 @@
 using MassTransit;
 using MongoDB.Driver;
 using NotificationApp.Consumers;
+using NotificationApp.Events;
 using NotificationApp.Models;
 using NotificationApp.Repositories;
 using NotificationApp.Services;
@@ -11,66 +12,50 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<INotificationRepository, NotificationRepository>();
+var mongoSettings = builder.Configuration.GetSection("MongoDb");
+var mongoClient = new MongoClient(mongoSettings["ConnectionString"]);
+var mongoDatabase = mongoClient.GetDatabase(mongoSettings["DatabaseName"]);
+builder.Services.AddSingleton<IMongoDatabase>(mongoDatabase);
+
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 
-var mongoConnectionString = builder.Configuration["MongoDb:ConnectionString"];
-var mongoDatabaseName = builder.Configuration["MongoDb:DatabaseName"];
-
-builder.Services.AddSingleton<IMongoClient>(sp =>
+builder.Services.AddMassTransit(busConfig =>
 {
-    return new MongoClient(mongoConnectionString);
-});
+    // Register consumers
+    busConfig.AddConsumer<NotificationCreatedConsumer>();
+    busConfig.AddConsumer<EmailNotificationSentConsumer>();
+    busConfig.AddConsumer<PushNotificationSentConsumer>();
 
-builder.Services.AddSingleton(sp =>
-{
-    var client = sp.GetRequiredService<IMongoClient>();
-    return client.GetDatabase(mongoDatabaseName);
-});
-
-builder.Services.AddMassTransit(x =>
-{
-    x.AddConsumer<NotificationConsumer>();
-    x.AddConsumer<EmailNotificationConsumer>();
-    x.AddConsumer<PushNotificationConsumer>();
-
-    x.UsingRabbitMq((context, cfg) =>
+    busConfig.UsingRabbitMq((context, config) =>
     {
-        cfg.Host("localhost", "/", h =>
+        config.Host(builder.Configuration["RabbitMQ:Host"], host =>
         {
-            h.Username("guest");
-            h.Password("guest");
+            host.Username(builder.Configuration["RabbitMQ:Username"]);
+            host.Password(builder.Configuration["RabbitMQ:Password"]);
         });
 
-        // Konfiguracja exchange
-        cfg.Message<Notification>(x => x.SetEntityName("notifications"));
-        cfg.Send<Notification>(x => x.UseRoutingKeyFormatter(context => context.Message.Status.ToString()));
+        config.ConfigureEndpoints(context);
 
-        // Konfiguracja g³ównej kolejki (notifications)
-        cfg.ReceiveEndpoint("notifications", e =>
-        {
-            e.ConfigureConsumer<NotificationConsumer>(context);
+        /*
+        config.ReceiveEndpoint("notification-created", e => {
+            e.ConfigureConsumer<NotificationCreatedConsumer>(context);
         });
-
-        // Konfiguracja kolejki email
-        cfg.ReceiveEndpoint("notifications-email", e =>
-        {
-            e.ConfigureConsumer<EmailNotificationConsumer>(context);
+        
+        config.ReceiveEndpoint("email-notification", e => {
+            e.ConfigureConsumer<EmailNotificationSentConsumer>(context);
         });
-
-        // Konfiguracja kolejki push
-        cfg.ReceiveEndpoint("notifications-push", e =>
-        {
-            e.ConfigureConsumer<PushNotificationConsumer>(context);
+        
+        config.ReceiveEndpoint("push-notification", e => {
+            e.ConfigureConsumer<PushNotificationSentConsumer>(context);
         });
-
-        cfg.ConfigureEndpoints(context);
+        */
     });
 });
 
-
 var app = builder.Build();
 
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -80,4 +65,5 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
 app.Run();
