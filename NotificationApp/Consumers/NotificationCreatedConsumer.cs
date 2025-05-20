@@ -22,7 +22,7 @@ namespace NotificationApp.Consumers
         public async Task Consume(ConsumeContext<Notification> context)
         {
             var notification = context.Message;
-            _logger.LogInformation($"Notification received for {notification.Recipient} via {notification.Channel} at {notification.ScheduledTime}. Message: {notification.Message}");
+            _logger.LogInformation($"Processing notification {notification.Id} for {notification.Recipient} via {notification.Channel} scheduled at {notification.ScheduledTime}");
 
             // Update status to scheduled
             notification.Status = NotificationStatus.Scheduled;
@@ -32,11 +32,17 @@ namespace NotificationApp.Consumers
             switch (notification.Channel)
             {
                 case NotificationChannel.Email:
-                    await context.Publish(new EmailNotificationSent { NotificationId = notification.Id! });
+                    // Use send instead of publish to route to a specific queue
+                    var emailEndpoint = await context.GetSendEndpoint(new Uri($"{context.SourceAddress.Scheme}://{context.SourceAddress.Host}/email-notification"));
+                    await emailEndpoint.Send(new EmailNotificationSent { NotificationId = notification.Id! });
                     break;
+
                 case NotificationChannel.Push:
-                    await context.Publish(new PushNotificationSent { NotificationId = notification.Id! });
+                    // Use send instead of publish to route to a specific queue
+                    var pushEndpoint = await context.GetSendEndpoint(new Uri($"{context.SourceAddress.Scheme}://{context.SourceAddress.Host}/push-notification"));
+                    await pushEndpoint.Send(new PushNotificationSent { NotificationId = notification.Id! });
                     break;
+
                 default:
                     _logger.LogWarning($"Unknown notification channel: {notification.Channel}");
                     break;
