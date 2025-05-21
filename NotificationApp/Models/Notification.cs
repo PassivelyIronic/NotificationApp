@@ -15,7 +15,6 @@ public class Notification
     public DateTime ScheduledTime { get; set; }
     public NotificationStatus Status { get; set; } = NotificationStatus.Waiting;
 
-    // Add retry tracking
     public int RetryCount { get; set; } = 0;
     public DateTime? LastRetryTime { get; set; }
 }

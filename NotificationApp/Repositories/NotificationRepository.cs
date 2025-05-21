@@ -9,6 +9,7 @@ namespace NotificationApp.Repositories
         Task UpdateAsync(Notification notification);
         Task<Notification?> GetByIdAsync(string id);
         Task IncrementRetryCountAsync(string id);
+        Task<List<Notification>> GetScheduledNotificationsAsync();
     }
 
     public class NotificationRepository : INotificationRepository
@@ -19,6 +20,8 @@ namespace NotificationApp.Repositories
         {
             _collection = database.GetCollection<Notification>("Notifications");
         }
+
+        public IMongoCollection<Notification> GetCollection() => _collection;
 
         public async Task InsertAsync(Notification notification)
         {
@@ -51,6 +54,16 @@ namespace NotificationApp.Repositories
                 .Set(n => n.LastRetryTime, DateTime.UtcNow);
 
             await _collection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task<List<Notification>> GetScheduledNotificationsAsync()
+        {
+            var filter = Builders<Notification>.Filter.And(
+                Builders<Notification>.Filter.Eq(n => n.Status, NotificationStatus.Waiting),
+                Builders<Notification>.Filter.Lte(n => n.ScheduledTime, DateTime.UtcNow)
+            );
+
+            return await _collection.Find(filter).ToListAsync();
         }
     }
 }

@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35919.96 d17.13
+VisualStudioVersion = 17.13.35919.96
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationApp", "NotificationApp\NotificationApp.csproj", "{80142A3C-4C81-43D2-A250-7E212A9C1386}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationApp.PushWorker", "NotificationApp.PushWorker\NotificationApp.PushWorker.csproj", "{49C42AAF-3CEF-4823-9C45-1A63A6ACD54E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationApp.EmailWorker", "NotificationApp.EmailWorker\NotificationApp.EmailWorker.csproj", "{A2697838-EA9F-44C9-9F0A-F7D5F488E1D5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{80142A3C-4C81-43D2-A250-7E212A9C1386}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80142A3C-4C81-43D2-A250-7E212A9C1386}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80142A3C-4C81-43D2-A250-7E212A9C1386}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49C42AAF-3CEF-4823-9C45-1A63A6ACD54E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49C42AAF-3CEF-4823-9C45-1A63A6ACD54E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49C42AAF-3CEF-4823-9C45-1A63A6ACD54E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49C42AAF-3CEF-4823-9C45-1A63A6ACD54E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2697838-EA9F-44C9-9F0A-F7D5F488E1D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2697838-EA9F-44C9-9F0A-F7D5F488E1D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2697838-EA9F-44C9-9F0A-F7D5F488E1D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2697838-EA9F-44C9-9F0A-F7D5F488E1D5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

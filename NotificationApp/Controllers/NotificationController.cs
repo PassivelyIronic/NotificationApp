@@ -19,20 +19,17 @@ namespace NotificationApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreateNotificationRequest request)
         {
-            // Tworzymy nową notyfikację, przekazując dane z żądania
             var notification = new Notification
             {
                 Recipient = request.Recipient,
                 Message = request.Message,
-                Channel = request.Channel, // Przekazujemy enum Channel
+                Channel = request.Channel,
                 ScheduledTime = request.ScheduledTime,
                 Status = NotificationStatus.Waiting
             };
 
-            // Przekazujemy powiadomienie do usługi
             await _service.CreateNotificationAsync(notification);
 
-            // Zwracamy powiadomienie jako odpowiedź
             return Ok(notification);
         }
     }
