@@ -26,7 +26,6 @@ namespace NotificationApp.Consumers
         {
             _logger.LogInformation($"Received scheduled notification request for notification {context.Message.NotificationId}");
 
-            // Get the notification from the repository
             var notification = await _repository.GetByIdAsync(context.Message.NotificationId);
 
             if (notification == null)
@@ -35,11 +34,9 @@ namespace NotificationApp.Consumers
                 return;
             }
 
-            // Update the status to indicate it's being processed
             notification.Status = NotificationStatus.Scheduled;
             await _repository.UpdateAsync(notification);
 
-            // Publish the notification to be processed by the appropriate consumer
             _logger.LogInformation($"Publishing notification {notification.Id} for {notification.Recipient} to be processed");
             await _publishEndpoint.Publish(notification);
         }

@@ -14,7 +14,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// MongoDB Configuration
 var mongoSettings = builder.Configuration.GetSection("MongoDb");
 var mongoClient = new MongoClient(mongoSettings["ConnectionString"]);
 var mongoDatabase = mongoClient.GetDatabase(mongoSettings["DatabaseName"]);
@@ -22,36 +21,30 @@ builder.Services.AddSingleton<IMongoDatabase>(mongoDatabase);
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 
-// Configure Quartz
 builder.Services.AddQuartz(q =>
 {
     q.UseMicrosoftDependencyInjectionJobFactory();
 
-    // Create a "notification-schedule" group
     var jobKey = new JobKey("notification-scheduler");
 
     q.AddJob<NotificationScheduleJob>(opts => opts.WithIdentity(jobKey));
 
-    // Create a trigger with a simple schedule
     q.AddTrigger(opts => opts
         .ForJob(jobKey)
         .WithIdentity("notification-scheduler-trigger")
         .WithSimpleSchedule(s => s
-            .WithIntervalInSeconds(30)  // Check for scheduled notifications every 30 seconds
+            .WithIntervalInSeconds(30)
             .RepeatForever()));
 });
 
-// Add the Quartz hosted service
+
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
-// Define the scheduler endpoint URI
 Uri schedulerEndpoint = new Uri("queue:scheduler");
 
 builder.Services.AddMassTransit(busConfig => {
-    // Add the message scheduler and point it to the scheduler endpoint
     busConfig.AddMessageScheduler(schedulerEndpoint);
 
-    // Register consumers
     busConfig.AddConsumer<NotificationCreatedConsumer>();
     busConfig.AddConsumer<EmailNotificationSentConsumer>();
     busConfig.AddConsumer<PushNotificationSentConsumer>();
@@ -63,12 +56,9 @@ builder.Services.AddMassTransit(busConfig => {
             host.Password(builder.Configuration["RabbitMQ:Password"]);
         });
 
-        // Use the Quartz message scheduler
         config.UseMessageScheduler(schedulerEndpoint);
 
-        // Configure endpoints
         config.ReceiveEndpoint("scheduler", e => {
-            // This endpoint receives scheduling requests
             e.ConfigureConsumer<ScheduledNotificationConsumer>(context);
         });
 
@@ -95,7 +85,6 @@ builder.Services.AddMassTransit(busConfig => {
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

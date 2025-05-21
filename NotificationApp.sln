@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationApp.PushWorker"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationApp.EmailWorker", "NotificationApp.EmailWorker\NotificationApp.EmailWorker.csproj", "{A2697838-EA9F-44C9-9F0A-F7D5F488E1D5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationApp.Shared", "NotificationApp.Shared\NotificationApp.Shared.csproj", "{C2A29AC3-D091-4178-A6AE-0F89F45EDFEE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{A2697838-EA9F-44C9-9F0A-F7D5F488E1D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2697838-EA9F-44C9-9F0A-F7D5F488E1D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2697838-EA9F-44C9-9F0A-F7D5F488E1D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2A29AC3-D091-4178-A6AE-0F89F45EDFEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2A29AC3-D091-4178-A6AE-0F89F45EDFEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2A29AC3-D091-4178-A6AE-0F89F45EDFEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2A29AC3-D091-4178-A6AE-0F89F45EDFEE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

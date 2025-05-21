@@ -4,7 +4,7 @@
     {
         public string Recipient { get; set; } = null!;
         public string Message { get; set; } = null!;
-        public NotificationChannel Channel { get; set; } // Zmieniono na enum
+        public NotificationChannel Channel { get; set; }
         public DateTime ScheduledTime { get; set; }
     }
 }
